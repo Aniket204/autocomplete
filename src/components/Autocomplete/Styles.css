@@ -1,0 +1,35 @@
+input {
+  width: 100%;
+  padding: 8px;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  padding: 8px;
+  text-align: left;
+  cursor: pointer;
+  border-bottom: 1px solid cyan;
+}
+
+p {
+  margin: 8px;
+}
+
+.auto-complete {
+  height: 400px;
+  width: 300px;
+}
+
+.suggestions {
+  border: 1px solid cyan;
+  max-height: 360px;
+  overflow-y: auto;
+}
+  
