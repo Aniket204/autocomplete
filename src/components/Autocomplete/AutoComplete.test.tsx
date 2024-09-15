@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import AutoComplete from './AutoComplete';
 import useDebounce from '../../customHooks/useDebounce';
@@ -59,31 +58,24 @@ describe('AutoComplete Component', () => {
     const input = screen.getByPlaceholderText('Search for dog breeds...');
     fireEvent.change(input, { target: { value: 'b' } });
 
-    await waitFor(() => {
-      const suggestions = screen.getByRole('list');
+    const suggestions = screen.getByRole('list');
 
-      // Match "Bulldog" by checking that both the "B" (in bold) and the rest of the word "ulldog" are found together
-      const firstSuggestion = within(suggestions).getByText((content, element) => {
-        return content.includes('ulldog') && element?.querySelector('b')?.textContent === 'B';
-      });
+    const suggestionElement1 = within(suggestions).getByText((content) =>
+      content.includes('ulldog')
+    );
+    const boldElement1 = within(suggestionElement1).getByText('B', { selector: 'b' });
+    expect(boldElement1).toBeInTheDocument();
 
-      const secondSuggestion = within(suggestions).getByText((content, element) => {
-        return content.includes('eagle') && element?.querySelector('b')?.textContent === 'B';
-      });
 
-      expect(firstSuggestion).toBeInTheDocument();
-      expect(secondSuggestion).toBeInTheDocument();
-    });
-
-    const firstSuggestion = screen.getByText((content, element) => {
-      return content.includes('ulldog') && element?.querySelector('b')?.textContent === 'B';
-    });
-
-    expect(within(firstSuggestion).getByText('B')).toBeInTheDocument();
+    const suggestionElement2 = within(suggestions).getByText((content) =>
+      content.includes('eagle')
+    );
+    const boldElement2 = within(suggestionElement2).getByText('B', { selector: 'b' });
+    expect(boldElement2).toBeInTheDocument();
   });
 
 
-  test('handles arrow key navigation and selection', async () => {
+  test('handles arrow key navigation and selection', () => {
     mockUseDebounce.mockReturnValue('b');
     mockUseFetch.mockReturnValue({ data: [{ name: 'Bulldog' }, { name: 'Beagle' }], loading: false, error: null });
 
@@ -91,21 +83,6 @@ describe('AutoComplete Component', () => {
 
     const input = screen.getByPlaceholderText('Search for dog breeds...');
     fireEvent.change(input, { target: { value: 'b' } });
-
-    await waitFor(() => {
-      const suggestions = screen.getByRole('list');
-
-      const firstSuggestion = within(suggestions).getByText((content, element) => {
-        return content.includes('ulldog') && element?.querySelector('b')?.textContent === 'B';
-      });
-
-      const secondSuggestion = within(suggestions).getByText((content, element) => {
-        return content.includes('eagle') && element?.querySelector('b')?.textContent === 'B';
-      });
-
-      expect(firstSuggestion).toBeInTheDocument();
-      expect(secondSuggestion).toBeInTheDocument();
-    });
 
     fireEvent.keyDown(input, { key: 'ArrowDown' });
     fireEvent.keyDown(input, { key: 'Enter' });
@@ -129,7 +106,7 @@ describe('AutoComplete Component', () => {
     expect(screen.getByText('Failed to fetch')).toBeInTheDocument();
   });
 
-  
+
   test('renders no results found message', async () => {
     mockUseDebounce.mockReturnValue('xyz');
     mockUseFetch.mockReturnValue({ data: [], loading: false, error: null });
@@ -143,6 +120,6 @@ describe('AutoComplete Component', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    jest.useRealTimers();  
+    jest.useRealTimers();
   });
 });

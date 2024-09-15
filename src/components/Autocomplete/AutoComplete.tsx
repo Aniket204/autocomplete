@@ -3,11 +3,11 @@ import './Styles.css';
 import useDebounce from '../../customHooks/useDebounce';
 import useFetch from '../../customHooks/useFetch';
 
-interface Breed {
+type Breed = {
   name: string;
-}
+};
 
-const AutoComplete: React.FC = () => {
+const AutoComplete = () => {
   const [query, setQuery] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const debouncedQuery = useDebounce(query, 300);
@@ -25,21 +25,19 @@ const AutoComplete: React.FC = () => {
     } else if (e.key === 'ArrowUp') {
       setHighlightedIndex((prevIndex) => Math.max(prevIndex - 1, 0));
     } else if (e.key === 'Enter') {
-      if (highlightedIndex >= 0 && highlightedIndex < filteredSuggestions.length) {
-        setQuery(filteredSuggestions[highlightedIndex].name); 
-        setHighlightedIndex(-1); 
-      }
+      setQuery(filteredSuggestions[highlightedIndex].name);
+      setHighlightedIndex(-1);
     }
   };
 
   const highlightSuggestion = useCallback((suggestion: string, query: string) => {
     const parts = suggestion.split(new RegExp(`(${query})`, 'gi'));
     return (
-      <span>
+      <>
         {parts.map((part, i) =>
           part.toLowerCase() === query.toLowerCase() ? <b key={i}>{part}</b> : part
         )}
-      </span>
+      </>
     );
   }, []);
 
@@ -50,8 +48,9 @@ const AutoComplete: React.FC = () => {
         padding: '8px',
         cursor: 'pointer'
       }}
+      onClick={()=> setQuery(suggestion.name)}
     >
-      {highlightSuggestion(suggestion.name, query)}
+      {highlightSuggestion(suggestion.name, debouncedQuery)}
     </li>
   ));
 
